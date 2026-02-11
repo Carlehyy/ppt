@@ -4,11 +4,14 @@ Markdown生成模块 — 将大纲转换为结构化的Markdown文档
 """
 
 from typing import Dict, Any, List
-from .utils import save_text
+from utils import save_text
 
 
 class MarkdownGenerator:
     """Markdown文档生成器"""
+
+    def __init__(self):
+        self.images_info = []  # 存储图片信息
 
     def generate(self, outline_plan: Dict[str, Any], parsed_content: Dict[str, Any],
                  output_path: str) -> str:
@@ -24,6 +27,11 @@ class MarkdownGenerator:
             生成的Markdown内容
         """
         print("📝 开始生成Markdown文档...")
+
+        # 获取图片信息
+        self.images_info = parsed_content.get("images_info", [])
+        if self.images_info:
+            print(f"  🖼️  找到 {len(self.images_info)} 张图片，将在文档中引用")
 
         md_content = []
 
@@ -168,12 +176,22 @@ class MarkdownGenerator:
                 lines.append(f"- {point}")
             lines.append("")
 
-        # 数据元素
+        # 数据元素和图片
         if data_elements:
-            lines.append("**数据/图表建议**:")
+            lines.append("​**数据/图表建议**:")
             for element in data_elements:
                 lines.append(f"- {element}")
             lines.append("")
+
+        # 插入图片（如果有）
+        page_images = self._find_images_for_page(page_num)
+        if page_images:
+            lines.append("​**相关图片**:")
+            lines.append("")
+            for img in page_images:
+                img_desc = f"页面{img['page']}的图片{img['index']}"
+                lines.append(f"![{img_desc}]({img['relative_path']})")
+                lines.append("")
 
         # 内容来源
         if content_source:
@@ -186,6 +204,11 @@ class MarkdownGenerator:
             lines.append("")
 
         return "\n".join(lines)
+
+    def _find_images_for_page(self, page_num: int) -> List[Dict[str, Any]]:
+        """查找与指定页面相关的图片"""
+        # 返回该页面的所有图片
+        return [img for img in self.images_info if img.get("page") == page_num]
 
     def _generate_sources(self, parsed_content: Dict[str, Any]) -> str:
         """生成内容来源索引"""

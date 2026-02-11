@@ -124,3 +124,90 @@ def format_source_info(file_path: str, section: str = None) -> str:
     if section:
         return f"{filename} - {section}"
     return filename
+
+
+# ─────────────────── 图片提取 ───────────────────
+
+def extract_images_from_pdf(pdf_path: str, output_dir: str) -> List[Dict[str, Any]]:
+    """
+    从PDF中提取图片
+    
+    Args:
+        pdf_path: PDF文件路径
+        output_dir: 图片输出目录
+        
+    Returns:
+        图片信息列表，每个元素包含：
+        - path: 图片保存路径
+        - page: 页码
+        - index: 页面内图片索引
+        - width: 图片宽度
+        - height: 图片高度
+    """
+    try:
+        import fitz  # PyMuPDF
+    except ImportError:
+        print("⚠ PyMuPDF未安装，无法提取图片。请运行: pip install PyMuPDF")
+        return []
+    
+    ensure_dir(output_dir)
+    images_info = []
+    
+    try:
+        pdf_doc = fitz.open(pdf_path)
+        
+        for page_num in range(len(pdf_doc)):
+            page = pdf_doc[page_num]
+            image_list = page.get_images(full=True)
+            
+            for img_index, img in enumerate(image_list):
+                xref = img[0]
+                base_image = pdf_doc.extract_image(xref)
+                image_bytes = base_image["image"]
+                image_ext = base_image["ext"]
+                
+                # 保存图片
+                image_filename = f"page_{page_num + 1}_image_{img_index + 1}.{image_ext}"
+                image_path = os.path.join(output_dir, image_filename)
+                
+                with open(image_path, "wb") as img_file:
+                    img_file.write(image_bytes)
+                
+                # 记录图片信息
+                images_info.append({
+                    "path": image_path,
+                    "relative_path": f"./images/{image_filename}",
+                    "page": page_num + 1,
+                    "index": img_index + 1,
+                    "width": base_image.get("width", 0),
+                    "height": base_image.get("height", 0),
+                    "ext": image_ext
+                })
+        
+        pdf_doc.close()
+        print(f"✅ 从PDF中提取了 {len(images_info)} 张图片")
+        
+    except Exception as e:
+        print(f"⚠ 图片提取失败: {str(e)}")
+    
+    return images_info
+
+
+def filter_images_by_size(images_info: List[Dict], min_width: int = 100, min_height: int = 100) -> List[Dict]:
+    """
+    过滤掉过小的图片（通常是图标或装饰性图片）
+    
+    Args:
+        images_info: 图片信息列表
+        min_width: 最小宽度
+        min_height: 最小高度
+        
+    Returns:
+        过滤后的图片信息列表
+    """
+    filtered = [
+        img for img in images_info
+        if img.get("width", 0) >= min_width and img.get("height", 0) >= min_height
+    ]
+    print(f"📊 过滤后保留 {len(filtered)}/{len(images_info)} 张图片（尺寸>={min_width}x{min_height}）")
+    return filtered

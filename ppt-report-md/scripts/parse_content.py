@@ -6,15 +6,18 @@
 
 import os
 from typing import List, Dict, Any
-from .llm_client import LLMClient
-from .utils import detect_file_type, validate_files, load_prompt
+from llm_client import LLMClient
+from utils import detect_file_type, validate_files, load_prompt, extract_images_from_pdf, filter_images_by_size, ensure_dir
 
 
 class ContentParser:
     """内容解析器"""
 
-    def __init__(self, llm: LLMClient):
+    def __init__(self, llm: LLMClient, extract_images: bool = True, output_dir: str = None):
         self.llm = llm
+        self.extract_images = extract_images
+        self.output_dir = output_dir or os.getcwd()
+        self.images_info = []  # 存储提取的图片信息
 
     def parse(self, file_paths: List[str]) -> Dict[str, Any]:
         """
@@ -65,6 +68,15 @@ class ContentParser:
             "file_name": os.path.basename(file_path),
             "file_type": detect_file_type(file_path)
         }
+
+        # 如果是PDF，提取图片
+        if self.extract_images and detect_file_type(file_path) == "pdf":
+            images_dir = os.path.join(self.output_dir, "images")
+            images = extract_images_from_pdf(file_path, images_dir)
+            # 过滤掉过小的图片
+            images = filter_images_by_size(images, min_width=200, min_height=200)
+            self.images_info.extend(images)
+            result["images_info"] = images
 
         return result
 

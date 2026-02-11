@@ -5,8 +5,8 @@
 
 import json
 from typing import Dict, Any
-from .llm_client import LLMClient
-from .utils import load_prompt
+from llm_client import LLMClient
+from utils import load_prompt
 
 
 class OutlinePlanner:

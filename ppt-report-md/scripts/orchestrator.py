@@ -5,11 +5,11 @@
 
 import os
 from typing import List, Dict, Any
-from .llm_client import LLMClient
-from .parse_content import ContentParser
-from .outline_planner import OutlinePlanner
-from .md_generator import MarkdownGenerator
-from .utils import load_config
+from llm_client import LLMClient
+from parse_content import ContentParser
+from outline_planner import OutlinePlanner
+from md_generator import MarkdownGenerator
+from utils import load_config
 
 
 class ReportOrchestrator:
@@ -24,7 +24,7 @@ class ReportOrchestrator:
         """
         # 加载配置
         if config_path and os.path.exists(config_path):
-            from .utils import load_json
+            from utils import load_json
             self.config = load_json(config_path)
         else:
             self.config = load_config()
@@ -34,7 +34,6 @@ class ReportOrchestrator:
         self.llm = LLMClient(llm_config)
 
         # 初始化各个模块
-        self.parser = ContentParser(self.llm)
         self.planner = OutlinePlanner(self.llm)
         self.generator = MarkdownGenerator()
 
@@ -58,6 +57,9 @@ class ReportOrchestrator:
 
         try:
             # 阶段1: 内容解析
+            # 初始化parser，传入output_dir
+            output_dir = os.path.dirname(os.path.abspath(output_path))
+            self.parser = ContentParser(self.llm, extract_images=True, output_dir=output_dir)
             parsed_content = self.parser.parse(input_files)
 
             # 阶段2: 大纲规划
