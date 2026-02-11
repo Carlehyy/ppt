@@ -1,68 +1,192 @@
 # PPT Report Agent
 
-一个智能的PPT生成Skill，能够从原始素材和模板自动生成专业的、可编辑的PowerPoint演示文稿。
+<div align="center">
 
-## 功能特性
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![GitHub](https://img.shields.io/badge/GitHub-ppt--report--agent-181717?logo=github)](https://github.com/Carlehyy/ppt)
 
-- ✅ **多格式支持**: 解析Word (.docx)、PDF (.pdf)、PowerPoint (.pptx) 文档
-- ✅ **模板应用**: 深度分析并应用用户提供的高质量PPT模板
-- ✅ **智能规划**: 基于LLM的大纲规划和内容生成
-- ✅ **版式匹配**: 自动为每页内容选择最合适的版式
-- ✅ **质量校审**: 五维度质量评估和改进建议
-- ✅ **完全可编辑**: 生成的PPTX文件可在PowerPoint中完全编辑
+**一个智能的PPT生成Skill，能够从原始素材文档和PPT模板自动生成专业的、可编辑的PowerPoint演示文稿。**
 
-## 快速开始
+[快速开始](#快速开始) • [功能特性](#功能特性) • [使用示例](#使用示例) • [文档](#文档)
 
-### 1. 安装依赖
+</div>
+
+---
+
+## 📖 简介
+
+PPT Report Agent是一个为Claude Code和Open Code设计的智能Skill，它能够：
+
+- 📄 **理解文档内容**：自动解析Word、PDF、PPT等格式的原始素材
+- 🎨 **应用模板风格**：深度分析并忠实应用用户提供的PPT模板设计
+- 🤖 **AI驱动生成**：使用大型语言模型规划大纲、生成内容
+- ✅ **质量保证**：五维度质量评估，确保专业水准
+- 🔧 **完全可编辑**：生成标准PPTX文件，可在PowerPoint中完全编辑
+
+## 🎯 使用场景
+
+当您在Claude Code或Open Code的CLI中输入以下指令时，此Skill会自动被调用：
+
+```
+"请学习Q4总结.docx资料，然后参考business.pptx的风格，帮我生成一个《星链洞察报告》"
+```
+
+```
+"帮我从这些文档生成一份工作汇报PPT"
+```
+
+```
+"把项目报告.docx转成PPT，使用tech_modern.pptx的风格"
+```
+
+## ✨ 功能特性
+
+### 核心能力
+
+- ✅ **多格式支持**: 自动解析Word (.docx)、PDF (.pdf)、PowerPoint (.pptx) 文档
+- ✅ **智能内容提取**: 使用LLM从非结构化文档中提取结构化语义信息
+- ✅ **模板风格应用**: 深度分析并忠实应用用户提供的PPT模板设计
+- ✅ **智能版式匹配**: 自动为每页内容选择最合适的模板版式
+- ✅ **五阶段Pipeline**: 内容解析 → 智能咨询 → 大纲规划 → 逐页生成 → 质量校审
+- ✅ **质量保证**: 五维度质量评估（准确性、精准性、连贯性、一致性、规范性）
+
+### 技术特点
+
+- 🚀 **声明式调用**: 通过自然语言指令自动识别和调用
+- 🔌 **即插即用**: 克隆到Skills目录即可使用
+- ⚙️ **高度可配置**: 通过config.json和prompts/自定义行为
+- 📊 **质量评估**: 自动生成质量评分和改进建议
+- 🎨 **模板友好**: 支持任意专业PPT模板
+
+## 🚀 快速开始
+
+### 1. 安装
+
+#### 方式1：克隆到Claude Code Skills目录
 
 ```bash
+cd ~/.config/claude-code/skills
+git clone https://github.com/Carlehyy/ppt.git ppt-report-agent
+cd ppt-report-agent
 pip install -r requirements.txt
 ```
 
-### 2. 准备模板
-
-将您的高质量PPT模板（.pptx文件）放入 `templates/user_templates/` 目录。
-
-推荐模板来源：[优品PPT](https://www.ypppt.com)
-
-### 3. 运行测试
+#### 方式2：克隆到Open Code Skills目录
 
 ```bash
-python test_skill.py
+cd /path/to/opencode/skills
+git clone https://github.com/Carlehyy/ppt.git ppt-report-agent
+cd ppt-report-agent
+pip install -r requirements.txt
 ```
 
-### 4. 生成PPT
+### 2. 准备PPT模板
+
+将您的高质量PPT模板放入 `templates/user_templates/` 目录：
 
 ```bash
-python scripts/orchestrator.py \
-  --input /path/to/document1.docx /path/to/document2.pdf \
-  --template templates/user_templates/your_template.pptx
+cp /path/to/your/template.pptx templates/user_templates/
 ```
 
-## 工作流程
+**推荐模板来源**: [优品PPT](https://www.ypppt.com)
 
-```
-原始素材 + 模板
-    ↓
-[阶段1+2] 内容解析 & 模板分析
-    ↓
-[阶段3] 智能咨询
-    ↓
-[阶段4] 大纲规划
-    ↓
-[阶段5] 逐页生成
-    ↓
-[阶段6] 质量校审
-    ↓
-output.pptx (可编辑)
+### 3. 在CLI中使用
+
+启动Claude Code或Open Code，然后输入：
+
+```bash
+claude
+> 请学习Q4总结.docx，参考business.pptx的风格，生成《星链洞察报告》
 ```
 
-## 目录结构
+AI助手会自动：
+1. 识别PPT生成意图
+2. 加载此Skill
+3. 执行生成流程
+4. 交付结果和质量评估
+
+## 📚 使用示例
+
+### 示例1：基础PPT生成
+
+**用户指令**：
+```
+请帮我从Q4总结.docx生成一份工作汇报PPT
+```
+
+**AI响应**：
+```
+我将使用ppt-report-agent Skill帮您生成工作汇报PPT。
+
+请确认以下信息：
+- 原始素材: Q4总结.docx
+- 参考模板: 使用默认模板
+- 汇报场景: 工作总结汇报
+- 预计页数: 15-20页
+
+是否开始生成？
+```
+
+### 示例2：指定模板风格
+
+**用户指令**：
+```
+请学习项目报告.docx资料，参考tech_modern.pptx的风格，帮我生成一个《AI项目进展汇报》
+```
+
+**生成结果**：
+```
+✓ 已成功生成《AI项目进展汇报》PPT
+
+📊 质量评估:
+- 总体评分: 85/100 (良好)
+- 内容准确性: 18/20
+- 逻辑连贯性: 17/20
+- 风格一致性: 17/20
+
+📄 生成文件: output.pptx (共18页)
+
+💡 改进建议:
+1. 第5页的增长率数据建议补充来源
+2. 第8页建议拆分为两页，每页聚焦一个主题
+```
+
+### 示例3：多文档合并
+
+**用户指令**：
+```
+请把Q4总结.docx、数据报表.pdf和成果展示.pptx这三个文件合并成一份PPT
+```
+
+更多示例请查看 [EXAMPLES.md](EXAMPLES.md)
+
+## 🏗️ 工作流程
+
+```
+原始素材 (Docx/PDF/PPT) + PPT模板
+            ↓
+[阶段1+2] 内容解析 & 模板分析 (并行)
+            ↓
+[阶段3] 智能咨询 (明确需求)
+            ↓
+[阶段4] 大纲规划 (用户确认)
+            ↓
+[阶段5] 逐页生成 (LLM + python-pptx)
+            ↓
+[阶段6] 质量校审 (五维度评估)
+            ↓
+    output.pptx (可编辑)
+```
+
+## 📁 项目结构
 
 ```
 ppt-report-agent/
-├── SKILL.md                # Skill核心指导文档
-├── README.md               # 本文件
+├── SKILL.md                # Skill核心指令集（AI助手必读）
+├── README.md               # 本文件 - 项目总览
+├── EXAMPLES.md             # 详细使用示例
+├── USAGE_GUIDE.md          # 详细使用指南
 ├── requirements.txt        # Python依赖
 ├── config.json             # 配置文件
 ├── test_skill.py           # 测试脚本
@@ -83,70 +207,81 @@ ppt-report-agent/
 │   └── quality_review.txt
 │
 ├── templates/              # PPT模板库
-│   └── user_templates/     # 用户自定义模板
+│   └── user_templates/     # 用户自定义模板（放这里）
 │
 └── references/             # 参考文档
     └── layout_mapping_rules.md
 ```
 
-## 配置说明
+## ⚙️ 配置说明
 
-编辑 `config.json` 可以调整：
+### 基础配置 (config.json)
 
-- **LLM模型**: 默认使用 `gpt-4.1-mini`
-- **温度参数**: 控制生成内容的创造性
-- **页数限制**: 默认20页
-- **质量阈值**: 最低置信度要求
-
-## 使用示例
-
-### Python API
-
-```python
-from ppt_report_agent.scripts.orchestrator import PPTAgentOrchestrator
-
-agent = PPTAgentOrchestrator()
-
-output_path, review = agent.run(
-    input_files=["Q4总结.docx", "数据报表.pdf"],
-    template_path="templates/user_templates/business_pro.pptx"
-)
-
-print(f"生成的PPT: {output_path}")
-print(f"质量评分: {review['overall_score']}/100")
+```json
+{
+  "llm": {
+    "model": "gpt-4.1-mini",      // LLM模型
+    "temperature": 0.7,            // 创造性参数
+    "max_retries": 3,              // 重试次数
+    "timeout": 60                  // 超时时间
+  },
+  "generation": {
+    "default_page_limit": 20,      // 默认页数限制
+    "max_bullets_per_slide": 5,    // 每页最多要点数
+    "font_size_adjustment": true   // 自动调整字号
+  }
+}
 ```
 
-### 命令行
+### 自定义提示词 (prompts/)
 
-```bash
-python scripts/orchestrator.py \
-  --input Q4总结.docx 数据报表.pdf \
-  --template templates/user_templates/business_pro.pptx \
-  --output my_presentation.pptx
-```
+您可以编辑提示词文件来调整LLM行为：
 
-## 质量保证
+- `content_analysis.txt` - 内容解析策略
+- `consultation.txt` - 咨询问题生成
+- `outline_planning.txt` - 大纲规划逻辑
+- `slide_generation.txt` - 页面内容生成
+- `quality_review.txt` - 质量评审标准
 
-生成的PPT会从以下五个维度进行评估：
+## 🔧 技术栈
 
-1. **内容准确性**: 数据来源可追溯
-2. **焦点精准性**: 每页一个核心信息
-3. **逻辑连贯性**: 叙事流畅
-4. **风格一致性**: 符合模板设计语言
-5. **质量标准**: 格式规范
+- **python-pptx** (1.0.2): PPT创建和模板分析
+- **python-docx** (1.1.0): Word文档解析
+- **PyPDF2** (3.0.1): PDF文档解析
+- **openai** (>=1.0.0): LLM交互
+- **Pillow** (10.2.0): 图片处理
 
-## 技术栈
+## 📖 文档
 
-- **python-pptx**: PPT创建和模板分析
-- **python-docx**: Word文档解析
-- **PyPDF2**: PDF文档解析
-- **openai**: LLM交互
-- **Pillow**: 图片处理
+- **[SKILL.md](SKILL.md)** - Skill核心指令集（AI助手必读）
+- **[EXAMPLES.md](EXAMPLES.md)** - 详细使用示例
+- **[USAGE_GUIDE.md](USAGE_GUIDE.md)** - 详细使用指南
+- **[references/layout_mapping_rules.md](references/layout_mapping_rules.md)** - 版式映射规则
 
-## 许可证
+## 🤝 贡献
 
-MIT License
+欢迎提交Issue和Pull Request！
 
-## 支持
+## 📄 许可证
 
-如有问题，请查阅 `SKILL.md` 或 `references/` 目录下的文档。
+[MIT License](LICENSE)
+
+## 🙏 致谢
+
+- 感谢[优品PPT](https://www.ypppt.com)提供高质量模板资源
+- 基于[python-pptx](https://python-pptx.readthedocs.io/)构建
+
+## 📞 支持
+
+- GitHub Issues: https://github.com/Carlehyy/ppt/issues
+- 文档: 查看项目内的Markdown文件
+
+---
+
+<div align="center">
+
+**如果这个项目对您有帮助，请给个⭐️Star支持一下！**
+
+Made with ❤️ by Manus AI
+
+</div>
