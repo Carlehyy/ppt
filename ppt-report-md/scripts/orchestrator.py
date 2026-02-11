@@ -9,6 +9,7 @@ from llm_client import LLMClient
 from parse_content import ContentParser
 from outline_planner import OutlinePlanner
 from md_generator import MarkdownGenerator
+from speech_generator import SpeechGenerator
 from utils import load_config
 
 
@@ -36,6 +37,7 @@ class ReportOrchestrator:
         # 初始化各个模块
         self.planner = OutlinePlanner(self.llm)
         self.generator = MarkdownGenerator()
+        self.speech_generator = SpeechGenerator(self.llm)
 
     def run(self, input_files: List[str], user_config: Dict[str, Any],
             output_path: str = "汇报文档.md") -> Dict[str, Any]:
@@ -68,10 +70,15 @@ class ReportOrchestrator:
             # 阶段3: Markdown生成
             md_content = self.generator.generate(outline_plan, parsed_content, output_path)
 
+            # 阶段4: 演讲稿生成
+            speech_output_path = output_path.replace(".md", "_演讲稿.md")
+            speech_content = self.speech_generator.generate(outline_plan, user_config, speech_output_path)
+
             # 返回结果
             result = {
                 "status": "success",
                 "output_path": output_path,
+                "speech_output_path": speech_output_path,
                 "total_pages": outline_plan.get("overview", {}).get("total_pages", 0),
                 "estimated_duration": outline_plan.get("overview", {}).get("estimated_duration", "N/A"),
                 "narrative_strategy": outline_plan.get("narrative_strategy", {}).get("type", "N/A")
@@ -79,7 +86,8 @@ class ReportOrchestrator:
 
             print("=" * 60)
             print("✅ 汇报文档生成成功！")
-            print(f"📄 输出文件: {output_path}")
+            print(f"📄 汇报文档: {output_path}")
+            print(f"🎤 演讲稿: {speech_output_path}")
             print(f"📊 总页数: {result['total_pages']}页")
             print(f"⏱️  预计时长: {result['estimated_duration']}")
             print(f"📖 叙事策略: {result['narrative_strategy']}")
