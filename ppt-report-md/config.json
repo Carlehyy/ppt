@@ -1,0 +1,17 @@
+{
+  "llm": {
+    "model": "gpt-4.1-mini",
+    "temperature": 0.3,
+    "max_tokens": 4096
+  },
+  "generation": {
+    "default_page_limit": 20,
+    "max_bullets_per_page": 5,
+    "default_scenario": "向上汇报",
+    "default_language_style": "专业简洁"
+  },
+  "parsing": {
+    "supported_formats": [".pdf", ".docx", ".txt", ".md"],
+    "max_file_size_mb": 50
+  }
+}

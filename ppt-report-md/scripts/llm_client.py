@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 LLM Client Module — 大模型交互层
-支持 OpenAI 兼容 API，内置重试、JSON修复、Token管理
+支持 OpenAI 兼容 API，内置重试、JSON修复
 """
 
 import os
@@ -96,50 +96,6 @@ class LLMClient:
 
         raise RuntimeError(f"LLM调用失败（已重试{self.max_retries}次）: {last_error}")
 
-    def call_llm_with_history(self, messages: List[Dict], response_json: bool = False,
-                               temperature: float = None) -> Any:
-        """
-        带对话历史的LLM调用（用于多轮交互）
-
-        Args:
-            messages: 完整的消息列表 [{"role": "...", "content": "..."}]
-            response_json: 是否期望JSON响应
-
-        Returns:
-            LLM响应内容
-        """
-        if not self.client:
-            raise RuntimeError("LLM客户端未初始化")
-
-        temp = temperature if temperature is not None else self.temperature
-
-        last_error = None
-        for attempt in range(self.max_retries):
-            try:
-                kwargs = {
-                    "model": self.model,
-                    "messages": messages,
-                    "temperature": temp,
-                    "max_tokens": self.max_tokens,
-                }
-                if response_json:
-                    kwargs["response_format"] = {"type": "json_object"}
-
-                response = self.client.chat.completions.create(**kwargs)
-                content = response.choices[0].message.content.strip()
-
-                if response_json:
-                    return self._parse_json_response(content)
-                return content
-
-            except Exception as e:
-                last_error = e
-                if attempt < self.max_retries - 1:
-                    wait_time = (attempt + 1) * 2
-                    time.sleep(wait_time)
-
-        raise RuntimeError(f"LLM调用失败: {last_error}")
-
     def _parse_json_response(self, content: str) -> Any:
         """解析LLM返回的JSON，带容错修复"""
         # 第一次尝试：直接解析
@@ -165,31 +121,16 @@ class LLMClient:
                 except json.JSONDecodeError:
                     pass
 
-        # 第四次尝试：修复常见JSON错误
-        fixed = self._fix_common_json_errors(content)
-        try:
-            return json.loads(fixed)
-        except json.JSONDecodeError:
-            pass
-
-        # 最后手段：返回原始内容包装
+        # 返回原始内容包装
         print(f"    ⚠ JSON解析失败，返回原始内容")
         return {"raw_content": content, "parse_error": True}
-
-    def _fix_common_json_errors(self, text: str) -> str:
-        """修复常见的JSON格式错误"""
-        text = re.sub(r'//.*?$', '', text, flags=re.MULTILINE)
-        text = re.sub(r',\s*([}\]])', r'\1', text)
-        text = text.replace("'", '"')
-        match = re.search(r'[{\[][\s\S]*[}\]]', text)
-        return match.group() if match else text
 
     def load_prompt_template(self, template_path: str, **kwargs) -> str:
         """加载并填充提示词模板"""
         with open(template_path, "r", encoding="utf-8") as f:
             template = f.read()
         for key, value in kwargs.items():
-            placeholder = "{{" + key + "}}"
+            placeholder = "{" + key + "}"
             if isinstance(value, (dict, list)):
                 value = json.dumps(value, ensure_ascii=False, indent=2)
             template = template.replace(placeholder, str(value))

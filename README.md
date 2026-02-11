@@ -1,152 +1,53 @@
-# PPT Skills Collection
+# PPT汇报文档生成器
 
-<div align="center">
+从多个原始语料文件中提取信息，生成结构化的Markdown汇报文档。
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+## 分支说明
 
-**一个专注于PPT生成和处理的Skills集合**
+- **main**: 原始版本的ppt-generate skill
+- **document**: 原始语料和模板PPT
+- **report-expert**: 优化版本，融合职场沟通模型（PREP、SCQA、STAR、金字塔原理）
 
-</div>
+## 使用推荐
 
----
+推荐使用 **report-expert** 分支，该版本：
+- ✅ 融合了经典职场沟通模型
+- ✅ 代码精简60%（从2000行减少到800行）
+- ✅ 流程简化（从6个阶段简化为3个阶段）
+- ✅ 生成的汇报文档更符合职场表达习惯
 
-## 📚 Skills列表
+## 快速开始
 
-### 1. [ppt-generate](./ppt-generate/) - PPT生成Skill
-
-智能的PPT生成Skill，能够从原始素材文档和PPT模板自动生成专业的、可编辑的PowerPoint演示文稿。
-
-**核心功能**：
-- 📄 多格式文档解析（Word、PDF、PPT）
-- 🎨 模板风格智能应用
-- 🤖 AI驱动的大纲规划和内容生成
-- ✅ 五维度质量评估
-- 🔧 生成可编辑的PPTX文件
-
-**适用场景**：
-- 工作汇报PPT生成
-- 项目进展报告制作
-- 多文档内容整合
-- 模板风格迁移
-
-**快速开始**：
 ```bash
-cd ~/.config/claude-code/skills/
+# 克隆仓库并切换到report-expert分支
 git clone https://github.com/Carlehyy/ppt.git
-cp -r ppt/ppt-generate ~/.config/claude-code/skills/
-cd ~/.config/claude-code/skills/ppt-generate
-pip install -r requirements.txt
-```
-
-**使用示例**：
-```
-请学习Q4总结.docx资料，然后参考business.pptx的风格，帮我生成一个《星链洞察报告》
-```
-
-详细文档请查看：[ppt-generate/README.md](./ppt-generate/README.md)
-
----
-
-## 🚀 快速安装
-
-### 方式1：克隆整个仓库
-
-```bash
-cd ~/.config/claude-code/skills/
-git clone https://github.com/Carlehyy/ppt.git
-```
-
-然后选择需要的Skill：
-```bash
-# 使用ppt-generate
-cp -r ppt/ppt-generate ~/.config/claude-code/skills/
-cd ~/.config/claude-code/skills/ppt-generate
-pip install -r requirements.txt
-```
-
-### 方式2：直接克隆单个Skill
-
-```bash
-cd ~/.config/claude-code/skills/
-git clone --depth 1 --filter=blob:none --sparse https://github.com/Carlehyy/ppt.git
 cd ppt
-git sparse-checkout set ppt-generate
-cp -r ppt-generate ../
-cd ..
-rm -rf ppt
-cd ppt-generate
+git checkout report-expert
+
+# 安装依赖
+cd ppt-report-md
 pip install -r requirements.txt
+
+# 查看详细使用说明
+cat SKILL.md
 ```
 
-## 📖 使用说明
+## 支持的文档格式
 
-### 在Claude Code中使用
+- PDF (.pdf)
+- Word (.docx)
+- 文本 (.txt)
+- Markdown (.md)
 
-1. **安装Skill**（见上方快速安装）
-2. **准备PPT模板**：将模板放入对应Skill的`templates/user_templates/`目录
-3. **在CLI中使用**：直接输入自然语言指令
+## 职场沟通模型
 
-```bash
-claude
-> 请帮我生成一个工作汇报PPT
-```
+本 skill 融合了经典的职场沟通模型：
 
-### 在Open Code中使用
+- **STAR法则**：适用于向上汇报、工作总结、述职报告
+- **SCQA模型**：适用于争取资源、项目提案、故事讲述
+- **PREP模型**：适用于简短汇报、快速决策、会议发言
+- **金字塔原理**：所有策略的底层逻辑（结论先行、以上统下、归类分组、逻辑递进）
 
-Open Code的使用方式与Claude Code相同，只需将Skill安装到Open Code的skills目录即可。
+## 许可证
 
-## 🛠️ 环境要求
-
-- Python 3.8+
-- Claude Code 或 Open Code
-- 已设置 `OPENAI_API_KEY` 环境变量
-
-## 📁 仓库结构
-
-```
-ppt/
-├── README.md              # 本文件 - 项目总览
-│
-└── ppt-generate/          # PPT生成Skill
-    ├── SKILL.md           # Skill核心指令集
-    ├── README.md          # Skill详细说明
-    ├── INSTALL.md         # 安装指南
-    ├── scripts/           # 核心代码
-    ├── prompts/           # LLM提示词
-    └── ...
-```
-
-## 🤝 贡献
-
-欢迎提交Issue和Pull Request！
-
-如果您有新的PPT相关Skill想要贡献，请：
-1. Fork本仓库
-2. 在根目录创建新的Skill文件夹（如`ppt-translate`）
-3. 确保包含标准的SKILL.md文件
-4. 提交Pull Request
-
-## 📄 许可证
-
-[MIT License](LICENSE)
-
-## 🙏 致谢
-
-- 感谢[优品PPT](https://www.ypppt.com)提供高质量模板资源
-- 基于[python-pptx](https://python-pptx.readthedocs.io/)构建
-
-## 📞 支持
-
-- GitHub Issues: https://github.com/Carlehyy/ppt/issues
-- 文档: 查看各Skill目录下的README.md
-
----
-
-<div align="center">
-
-**如果这个项目对您有帮助，请给个⭐️Star支持一下！**
-
-Made with ❤️ by Manus AI
-
-</div>
+MIT License
