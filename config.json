@@ -1,0 +1,24 @@
+{
+  "llm": {
+    "model": "gpt-4.1-mini",
+    "temperature": 0.7,
+    "max_retries": 3,
+    "timeout": 60
+  },
+  "content_parsing": {
+    "chunk_size": 1000,
+    "overlap": 200,
+    "enable_ocr": false
+  },
+  "generation": {
+    "default_page_limit": 20,
+    "enable_image_extraction": true,
+    "enable_table_generation": true,
+    "max_bullets_per_slide": 5,
+    "font_size_adjustment": true
+  },
+  "quality": {
+    "enable_auto_review": true,
+    "min_confidence_threshold": 0.7
+  }
+}
